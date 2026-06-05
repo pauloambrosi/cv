@@ -12,6 +12,7 @@
 
   <link rel="canonical" href="https://ambrosi.top/paulo">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link href="https://cdn.jsdelivr.net/npm/shareon@2/dist/shareon.min.css" rel="stylesheet">
 
   <!-- Open Graph -->
   <meta property="og:type" content="profile">
@@ -19,11 +20,10 @@
   <meta property="og:description"
     content="Analista de Sistemas especializado em desenvolvimento web, Moodle, jogos e simuladores educacionais.">
   <meta property="og:url" content="https://ambrosi.top/paulo">
-  <meta property="og:image" content=https://ambrosi.top/paulo/assets/og-image.png">
+  <meta property="og:image" content="https://ambrosi.top/paulo/assets/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt"
-    content="Paulo Ambrosi — Analista de Sistemas · PHP · JavaScript · Moodle">
+  <meta property="og:image:alt" content="Paulo Ambrosi — Analista de Sistemas · PHP · JavaScript · Moodle">
   <meta property="og:locale" content="pt_BR">
   <meta property="profile:first_name" content="Paulo">
   <meta property="profile:last_name" content="Ambrosi">
@@ -91,13 +91,29 @@
       <span>Baixar PDF</span>
     </button>
 
-    <button type="button" class="action-btn action-share" aria-label="Compartilhar este currículo">
-      <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16">
-        <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-          d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
-      </svg>
-      <span>Compartilhar</span>
-    </button>
+    <div class="share-wrapper">
+
+      <button type="button" class="action-btn action-share" aria-label="Compartilhar este currículo">
+        <svg class="icon" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16">
+          <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13" />
+        </svg>
+        <span>Compartilhar</span>
+      </button>
+
+      <div class="share-menu">
+        <div class="shareon">
+          <a class="copy-url"></a>
+          <a class="whatsapp"></a>
+          <a class="facebook"></a>
+          <a class="linkedin"></a>
+          <a class="telegram"></a>
+          <a class="threads"></a>
+          <a class="twitter"></a>
+          <a class="email"></a>
+        </div>
+      </div>
+    </div>
 
     <span class="action-feedback" id="share-feedback" role="status" aria-live="polite"></span>
   </div>
@@ -125,8 +141,8 @@
 
         <div class="profile">
           <span class="profile__initials" aria-hidden="true">PA</span> <img class="profile__photo"
-            src="assets/profile.jpg" alt="Foto de Paulo Ambrosi" width="120" height="120" loading="eager" decoding="async"
-            onerror="this.remove()">
+            src="assets/profile.jpg" alt="Foto de Paulo Ambrosi" width="120" height="120" loading="eager"
+            decoding="async" onerror="this.remove()">
         </div>
 
         <section class="block" aria-labelledby="contato-title">
@@ -227,7 +243,7 @@
             <span>12+ anos</span>
             <span aria-hidden="true" class="tagline__sep">·</span>
             <span>Moodle Specialist</span>
-             <span aria-hidden="true" class="tagline__sep">·</span>
+            <span aria-hidden="true" class="tagline__sep">·</span>
             <span>Análise</span>
             <span aria-hidden="true" class="tagline__sep">·</span>
             <span>Simuladores Educacionais</span>
@@ -355,38 +371,33 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Compartilhar: Web Share API nativo, com fallback para copiar o link.
-    (function () {
-      var btn = document.querySelector('.action-share');
-      var feedback = document.getElementById('share-feedback');
-      if (!btn || !feedback) return;
-      var timer;
+    (() => {
+      const btn = document.querySelector('.action-share');
+      const menu = document.querySelector('.share-menu');
 
-      function announce(msg) {
-        feedback.textContent = msg;
-        feedback.classList.add('is-visible');
-        clearTimeout(timer);
-        timer = setTimeout(function () {
-          feedback.classList.remove('is-visible');
-        }, 3000);
-      }
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
 
-      btn.addEventListener('click', function () {
-        var url = window.location.href;
-        var data = { title: document.title, text: 'Currículo de Paulo Ambrosi', url: url };
-
-        if (navigator.share) {
-          navigator.share(data).catch(function () { /* usuário cancelou */ });
+        // Mobile: abre compartilhamento nativo
+        if (
+          navigator.share &&
+          /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+        ) {
+          navigator.share({
+            title: document.title,
+            text: 'Currículo de Paulo Ambrosi',
+            url: location.href
+          });
           return;
         }
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(url).then(
-            function () { announce('Link copiado!'); },
-            function () { announce('Copie o link na barra de endereços'); }
-          );
-          return;
+
+        menu.classList.toggle('is-open');
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.share-wrapper')) {
+          menu.classList.remove('is-open');
         }
-        announce('Copie o link na barra de endereços');
       });
     })();
   </script>
@@ -394,5 +405,7 @@
   <!-- Cloudflare Web Analytics · cookieless, sem banner LGPD -->
 
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/shareon@2/dist/shareon.iife.js" defer init></script>
 
 </html>
